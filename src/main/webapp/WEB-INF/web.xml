@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+
+    <display-name>Embedded-jmxtrans-war</display-name>
+    <description>Embedded JMXTrans servlet</description>
+    <distributable/>
+
+    <servlet>
+        <servlet-name>main</servlet-name>
+        <servlet-class>golorins.jmxtrans.embedded.servlet.EmbeddedJmxTransEtcdServlet</servlet-class>
+        <init-param>
+            <param-name>jmxtrans.kv.config</param-name>
+            <param-value>etcd://127.0.0.1:4001/jmxtrans/config</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>main</servlet-name>
+        <url-pattern>/main</url-pattern>
+    </servlet-mapping>
+
+</web-app>
