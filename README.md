@@ -10,7 +10,7 @@ We have a configuration key which contains the references to the various element
 
 The value of the configuration key is retrieved using a scan in depth first of the path provided. The first occurrence present is used.
 ```
-Eg:
+Ex.:
  etcd://127.0.0.1:123/jdk7/tomcat/service1/customer1/family1/instance1/config<br>
  etcd://127.0.0.1:123/jdk7/tomcat/service1/customer1/family1/config<br>
  etcd://127.0.0.1:123/jdk7/tomcat/service1/customer1/config
@@ -21,7 +21,7 @@ The idea is that the hierarchy is built from the most general down to the more s
 Every application server contains an instance of the embedded-jmxtrans-war and is given a specific config key based on the type and purpose of the container.
 With this key the embedded-jmxtrans-war can retrieve the right configuration and we can tune it centrally at any level of the hierarchy.
 
-A configuration key is coma separated list of elements that should be merged to obtain the final JMXTrans configuration. 
+A configuration key is a coma separated list of elements that should be merged to obtain the final JMXTrans configuration. 
 For example a string like this:
 
 ```
@@ -38,10 +38,18 @@ At a customizable time interval the configuration is refreshed and in case it wa
 
 In order to configure the servlet you can define two system properties:
 
-jmxtrans.kv.config URI of the configuration key
-jmxtrans.kv.refresh refresh time interval in milliseconds: default 120sec
+```
+jmxtrans.kv.config: URI of the configuration key
+jmxtrans.kv.refresh: refresh time interval in milliseconds: default 120sec
+```
 
 The value of jmxtrans.kv.config is also retrieved from the init-param of the servlet as defined in the web.xml file. The system property value overrides the init-param one.
+
+To specify a cluster of etcd servers you can use the syntax ```etcd://[127.0.0.1:4001,127.0.0.1:4002]/path```. Servers are used in the given order
+Ex.
+```
+-Djmxtrans.kv.config=etcd://192.168.10.100:4001/jmxtrans/config  -Djmxtrans.kv.refresh=300000
+```
 
 #### Note
 This application uses my fork of embedded-jmxtrans which has the ability to read configuration url from etcd and can substitute values from system properties in the result aliases.
