@@ -43,7 +43,7 @@ jmxtrans.kv.config: URI of the configuration key
 jmxtrans.kv.refresh: refresh time interval in milliseconds: default 120sec
 ```
 
-The value of jmxtrans.kv.config is also retrieved from the init-param of the servlet as defined in the web.xml file. The system property value overrides the init-param one.
+The value of jmxtrans.kv.config and jmxtrans.kv.refresh is also retrieved from the init-param of the servlet as defined in the web.xml file. The system property value overrides the init-param one.
 
 To specify a cluster of etcd servers you can use the syntax ```etcd://[127.0.0.1:4001,127.0.0.1:4002]/path```. Servers are used in the given order
 Ex.

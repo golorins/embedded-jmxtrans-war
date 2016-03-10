@@ -12,6 +12,10 @@
             <param-name>jmxtrans.kv.config</param-name>
             <param-value>etcd://127.0.0.1:4001/jmxtrans/config</param-value>
         </init-param>
+        <init-param>
+            <param-name>jmxtrans.kv.refresh</param-name>
+            <param-value>300000</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

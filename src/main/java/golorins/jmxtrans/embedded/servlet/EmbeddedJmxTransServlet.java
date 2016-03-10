@@ -43,7 +43,7 @@ import org.jmxtrans.embedded.config.KVStore;
  */
 public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
-  public static final long DEFUALT_REFRESH_INTERVAL = 120000l;
+  public static final long DEFAULT_REFRESH_INTERVAL = 120000l;
   public static final String JMXTRANS_KV_REFRESH_INTERVAL = "jmxtrans.kv.refresh";
   public static final String JMXTRANS_KV_CONFIG = "jmxtrans.kv.config";
 
@@ -65,9 +65,9 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
     configuration = System.getProperty(JMXTRANS_KV_CONFIG);
     try {
-      refreshInterval = Integer.parseInt(System.getProperty(JMXTRANS_KV_REFRESH_INTERVAL, "DEFAULT"));
+      refreshInterval = Integer.parseInt(System.getProperty(JMXTRANS_KV_REFRESH_INTERVAL, "0"));
     } catch (NumberFormatException e) {
-      refreshInterval = DEFUALT_REFRESH_INTERVAL;
+      refreshInterval = DEFAULT_REFRESH_INTERVAL;
     }
   }
 
@@ -91,6 +91,13 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
     if (configuration == null) {
       configuration = config.getInitParameter(JMXTRANS_KV_CONFIG);
+    }
+    if (refreshInterval == 0) {
+      try {
+         refreshInterval = Integer.parseInt(config.getInitParameter(JMXTRANS_KV_REFRESH_INTERVAL));
+      } catch (NumberFormatException e) {
+         refreshInterval = DEFAULT_REFRESH_INTERVAL;
+      }
     }
 
     if (configuration == null || configuration.length() == 0) {
