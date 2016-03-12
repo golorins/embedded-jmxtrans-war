@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2016 the original author or authors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
  * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -37,14 +37,19 @@ import org.jmxtrans.embedded.EmbeddedJmxTrans;
 import org.jmxtrans.embedded.EmbeddedJmxTransException;
 import org.jmxtrans.embedded.config.ConfigurationParser;
 import org.jmxtrans.embedded.config.KVStore;
+import org.jmxtrans.embedded.util.StringUtils2;
 
 /**
- * This is the servlet
+ * This is the servlet that starts/stops the embedded-jmxtrans instance. It's heavily inspired by
+ * the EmbeddedJmxTransLoaderListener filter of embedded-jmxtrans
+ *
+ * @author Simone Zorzetti
  */
 public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
   public static final long DEFAULT_REFRESH_INTERVAL = 120000l;
   public static final String JMXTRANS_KV_REFRESH_INTERVAL = "jmxtrans.kv.refresh";
+  public static final String JMXTRANS_CONFIG = "jmxtrans.config";
   public static final String JMXTRANS_KV_CONFIG = "jmxtrans.kv.config";
 
   private static final long serialVersionUID = 1L;
@@ -57,13 +62,18 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
   private String configuration;
   private List<String> configurationUrls = null;
   private long refreshInterval;
+  private boolean fromKVStore = true;
 
   /**
-   *
+   * Constructor
    */
   public EmbeddedJmxTransServlet() {
 
     configuration = System.getProperty(JMXTRANS_KV_CONFIG);
+    if (configuration == null || configuration.isEmpty()) {
+      fromKVStore = false;
+      configuration = System.getProperty(JMXTRANS_CONFIG);
+    }
     try {
       refreshInterval = Integer.parseInt(System.getProperty(JMXTRANS_KV_REFRESH_INTERVAL, "0"));
     } catch (NumberFormatException e) {
@@ -86,26 +96,46 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
     // nothing to do
   }
 
+  /**
+   * Determine the configuration type and start the appropriate embedded jmxtrans instance. If it's
+   * the case start the timertask to refresh the configuration
+   *
+   * @param config
+   * @throws ServletException
+   *
+   * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
+   */
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
 
-    if (configuration == null) {
+
+    if (configuration == null || configuration.isEmpty()) {
       configuration = config.getInitParameter(JMXTRANS_KV_CONFIG);
     }
+    if (configuration == null || configuration.isEmpty()) {
+      fromKVStore = false;
+      configuration = config.getInitParameter(JMXTRANS_CONFIG);
+    }
+
     if (refreshInterval == 0) {
       try {
-         refreshInterval = Integer.parseInt(config.getInitParameter(JMXTRANS_KV_REFRESH_INTERVAL));
+        refreshInterval = Integer.parseInt(config.getInitParameter(JMXTRANS_KV_REFRESH_INTERVAL));
       } catch (NumberFormatException e) {
-         refreshInterval = DEFAULT_REFRESH_INTERVAL;
+        refreshInterval = DEFAULT_REFRESH_INTERVAL;
       }
     }
 
-    if (configuration == null || configuration.length() == 0) {
-      throw new EmbeddedJmxTransException("Missing '" + JMXTRANS_KV_CONFIG + "' init param or system property");
+    if (configuration == null || configuration.isEmpty()) {
+      throw new EmbeddedJmxTransException("Missing '" + JMXTRANS_CONFIG + "' init param or system property");
     }
 
     startJmxTrans();
 
+    if (fromKVStore == false) {
+      return;
+    }
+
+    // It's a KV stored configuration, start a timertask to periodically refresh it
     TimerTask configCheckTask = new TimerTask() {
 
       public void run() {
@@ -139,6 +169,12 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
   }
 
+  /**
+   * Stop the jmxtrans instance and destroy the context
+   *
+   *
+   * @see javax.servlet.GenericServlet#destroy()
+   */
   public void destroy() {
     stopJmxTrans();
     super.destroy();
@@ -211,19 +247,30 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
   }
 
   /**
-   * Read configuration URLS from the key value store
+   * Read configuration URLS from the key value store or simply split the configuration string if
+   * url it's not a kv store
    *
    * @return
    */
   protected List<String> readConfigurationUrls() {
 
-    KVStore kvs = getKVStoreInstance();
-    KVStoreComposedConfiguration kvsConf = new KVStoreComposedConfiguration(kvs);
+    if (fromKVStore) {
+      KVStore kvs = makeKVStoreInstance();
+      KVStoreComposedConfiguration kvsConf = new KVStoreComposedConfiguration(kvs);
 
-    return kvsConf.getConfigElementsKeys(configuration);
+      return kvsConf.getConfigElementsKeys(configuration);
+    } else {
+      return StringUtils2.delimitedStringToList(configuration);
+    }
   }
 
-  protected abstract KVStore getKVStoreInstance();
+  /**
+   * Create the implementation of the KVStore interface to use in order to read the remote
+   * configuration structure
+   *
+   * @return
+   */
+  protected abstract KVStore makeKVStoreInstance();
 
 
 }

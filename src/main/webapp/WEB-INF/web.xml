@@ -10,7 +10,11 @@
         <servlet-class>golorins.jmxtrans.embedded.servlet.EmbeddedJmxTransEtcdServlet</servlet-class>
         <init-param>
             <param-name>jmxtrans.kv.config</param-name>
-            <param-value>etcd://127.0.0.1:4001/jmxtrans/config</param-value>
+            <param-value></param-value>
+        </init-param>
+        <init-param>
+            <param-name>jmxtrans.config</param-name>
+            <param-value>classpath:console-out.json, classpath:org/jmxtrans/embedded/config/jvm-sun-hotspot.json</param-value>
         </init-param>
         <init-param>
             <param-name>jmxtrans.kv.refresh</param-name>
