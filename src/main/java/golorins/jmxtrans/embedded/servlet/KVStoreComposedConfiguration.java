@@ -32,7 +32,7 @@ import org.jmxtrans.embedded.config.KeyValue;
 /**
  * JMXTrans configuration from a remote key value store. The configuration is stored in a key that
  * holds the references to the various elements that make up the final jmxtrans configuration
- *
+ * 
  * @author Simone Zorzetti
  */
 public class KVStoreComposedConfiguration {
@@ -43,10 +43,11 @@ public class KVStoreComposedConfiguration {
 
   /**
    * Constructor
-   *
+   * 
    * @param store KVStore: implementation of the KVStore interface to use
    */
   public KVStoreComposedConfiguration(KVStore store) {
+
     keyValueStore = store;
   }
 
@@ -70,8 +71,8 @@ public class KVStoreComposedConfiguration {
    * If the all the keys didn't change since the last invocation returns null<br>
    * Ex:<br>
    * etcd://127.0.0.1:123/elements/jdk7, etcd://127.0.0.1:123/elements/tomcat7,
-   * etcd://127.0.0.1:123/elements/output<br>
-   *
+   * etcd://127.0.0.1:123/elements/output <br>
+   * 
    * @param configKeyUri the uri of the configuration key
    * @return
    * @throws EmbeddedJmxTransException
@@ -110,18 +111,16 @@ public class KVStoreComposedConfiguration {
       configurationUrls.add(url);
     }
 
-    if (configChanged) {
-      // First time or configKeyUri key changed
-      return configurationUrls;
-    }
-
     // Verify if the value of the config keys has changed since last time
     for (String keyUrl : configurationUrls) {
-      configChanged = (getKeyValueIfModified(keyUrl) != null);
-
-      if (configChanged) {
-        return configurationUrls;
+      if (getKeyValueIfModified(keyUrl) != null) {
+        System.err.println("configChanged: " + keyUrl);
+        configChanged = true;
       }
+
+    }
+    if (configChanged) {
+      return configurationUrls;
     }
 
     // Config not changed
@@ -130,10 +129,9 @@ public class KVStoreComposedConfiguration {
   }
 
   /**
-   * Retrieves a single key value from the kv store. Returns the value of the key or null if the key
-   * doesn't exist. The onlyIfModified flag can force the method to return the value only if it has
-   * been modified since last read
-   *
+   * Retrieves a single key value from the kv store only if it has been modified since last read .
+   * Returns the value of the key or null if the key doesn't exist or is unchanged.
+   * 
    * @param KeyURI the uri of the the key to retrieve
    * @return the value of the key or null if the key doesn't exist or is unchanged
    * @throws EmbeddedJmxTransException
@@ -145,22 +143,22 @@ public class KVStoreComposedConfiguration {
       return null;
     }
 
-    String keyValue = keyVal.getValue();
+    String result = keyVal.getValue();
 
-    if (keyModifiedIndexes.get(KeyURI) != null && keyVal.getVersion().equals(keyModifiedIndexes.get(KeyURI))) {
-      keyVal = null;
+    if (keyVal.getVersion().equals(keyModifiedIndexes.get(KeyURI))) {
+      result = null;
     } else {
       keyModifiedIndexes.put(KeyURI, keyVal.getVersion());
     }
 
-    return keyValue;
+    return result;
 
   }
 
   /**
    * Retrieves a single key value from the kv store. Returns the value of the key or null if the key
    * doesn't exist.
-   *
+   * 
    * @param KeyURI the uri of the key to retrieve
    * @return the value of the key or null if the key doesn't exist or is unchanged
    * @throws EmbeddedJmxTransException

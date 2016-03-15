@@ -1,15 +1,15 @@
 /*
  * Copyright (c) 2016 the original author or authors
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
  * associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
  * NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -42,7 +42,7 @@ import org.jmxtrans.embedded.util.StringUtils2;
 /**
  * This is the servlet that starts/stops the embedded-jmxtrans instance. It's heavily inspired by
  * the EmbeddedJmxTransLoaderListener filter of embedded-jmxtrans
- *
+ * 
  * @author Simone Zorzetti
  */
 public abstract class EmbeddedJmxTransServlet extends GenericServlet {
@@ -83,12 +83,12 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
   /**
    * This method is implemented just to satisfy the Servlet requirements.
-   *
+   * 
    * @param arg0
    * @param arg1
    * @throws ServletException
    * @throws IOException
-   *
+   * 
    * @see javax.servlet.GenericServlet#service(javax.servlet.ServletRequest,
    *      javax.servlet.ServletResponse)
    */
@@ -99,10 +99,10 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
   /**
    * Determine the configuration type and start the appropriate embedded jmxtrans instance. If it's
    * the case start the timertask to refresh the configuration
-   *
+   * 
    * @param config
    * @throws ServletException
-   *
+   * 
    * @see javax.servlet.GenericServlet#init(javax.servlet.ServletConfig)
    */
   public void init(ServletConfig config) throws ServletException {
@@ -140,17 +140,18 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
       public void run() {
 
-        List<String> configurationUrls = null;
+        List<String> confUrls = null;
         try {
           // Get from KV config keys if changed
-          configurationUrls = readConfigurationUrls();
+          confUrls = readConfigurationUrls();
         } catch (EmbeddedJmxTransException e1) {
           // Cannot read KV, skip check cycle
         }
-        if (configurationUrls == null)
+        if (confUrls == null)
           return;
 
-        setConfigurationUrls(configurationUrls);
+        getServletContext().log("Restart Embedded-jmxtrans: " + confUrls);
+        setConfigurationUrls(confUrls);
         stopJmxTrans();
         try {
           Thread.sleep(2000);
@@ -171,8 +172,8 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
 
   /**
    * Stop the jmxtrans instance and destroy the context
-   *
-   *
+   * 
+   * 
    * @see javax.servlet.GenericServlet#destroy()
    */
   public void destroy() {
@@ -249,7 +250,7 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
   /**
    * Read configuration URLS from the key value store or simply split the configuration string if
    * url it's not a kv store
-   *
+   * 
    * @return
    */
   protected List<String> readConfigurationUrls() {
@@ -267,7 +268,7 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
   /**
    * Create the implementation of the KVStore interface to use in order to read the remote
    * configuration structure
-   *
+   * 
    * @return
    */
   protected abstract KVStore makeKVStoreInstance();
