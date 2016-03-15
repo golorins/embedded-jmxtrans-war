@@ -89,7 +89,6 @@ public class KVStoreComposedConfiguration {
     while (configValues == null && path.length() > 1) {
       configChanged = (getKeyValueIfModified(etcdURI + path + "/" + key) != null);
       configValues = getKeyValue(etcdURI + path + "/" + key);
-      System.err.println("Path: " + path + " Configvalues: " + configValues);
       path = path.substring(0, path.lastIndexOf("/"));
     }
 
