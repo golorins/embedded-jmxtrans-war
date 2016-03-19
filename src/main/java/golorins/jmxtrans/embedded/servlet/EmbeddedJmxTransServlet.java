@@ -158,9 +158,9 @@ public abstract class EmbeddedJmxTransServlet extends GenericServlet {
           startJmxTrans();
         } catch (InterruptedException e) {
           // nothing to do
-        } catch (EmbeddedJmxTransException e1) {
+        } catch (Throwable t) {
           // Cannot restart jmxtrans
-          getServletContext().log("Can't restart embedded-jmxtrans: config error ? " + configuration);
+          getServletContext().log("Can't restart embedded-jmxtrans: config error ? " + configuration + " - " + t);
         }
       }
     };
