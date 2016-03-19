@@ -1,0 +1,7 @@
+{
+"outputWriters": [
+  {
+    "@class": "org.jmxtrans.embedded.output.ConsoleWriter"
+  }
+]
+}

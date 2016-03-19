@@ -1,0 +1,9 @@
+{
+	"queries" : [ 
+        {
+            "objectName": "Catalina:type=Manager,path=*,host=*",
+            "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Catalina.manager.%path%",
+            "attributes": [	{"type" : "gauge", "name": "activeSessions"} ]
+        }
+	]
+}

@@ -1,0 +1,10 @@
+{
+	"queries" : [ 
+			{			  
+			  "objectName" : "Catalina:type=GlobalRequestProcessor,name=*",
+			  "resultAlias": "${sia.container.type}.${jmxtrans.graphite.name}.Catalina.Requests",
+			  "attributes" : [ { "type" : "gauge", "name":"bytesReceived"}, { "type" : "gauge", "name":""bytesSent"} ]
+			}
+        }
+	]
+}

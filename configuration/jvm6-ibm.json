@@ -1,0 +1,46 @@
+{
+"queries" : [ 
+    {
+      "objectName" : "java.lang:type=Memory",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.Memory",
+      "attributes": [
+			{
+				"type" : "gauge",
+				"name": "HeapMemoryUsage",
+				"keys": ["max", "used"]
+			},
+			{
+				"type" : "gauge",
+				"name": "NonHeapMemoryUsage",
+				"keys": ["committed", "used"]
+			}
+	  ]
+    },
+    {
+      "objectName" : "java.lang:type=GarbageCollector,name=Copy",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.CopyGCCount",
+      "attributes" : [ { "type" : "gauge", "name":"CollectionCount"} ]
+    },
+    {
+      "objectName" : "java.lang:type=GarbageCollector,name=MarkSweepCompact",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.MarkGCCount",
+      "attributes" : [ { "type" : "gauge", "name":"CollectionCount"}, { "type" : "gauge", "name":"TotalCompacts"} ]
+    },
+    {
+      "objectName" : "java.lang:type=Threading",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.Thread",
+      "attributes" : [ { "type" : "gauge", "name":"ThreadCount"} ]
+    },
+    {
+      "objectName" : "java.lang:type=OperatingSystem",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.OS",
+      "attributes" : [ { "type" : "gauge", "name":"ProcessPhysicalMemorySize"}, { "type" : "gauge", "name":"ProcessVirtualMemorySize"}, { "type" : "gauge", "name":"ProcessCpuTime"} ]
+    },	
+    {
+      "objectName" : "java.lang:type=GarbageCollector,name=J9 GC",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.GCCount",
+      "attributes" : [ { "type" : "gauge", "name":"CollectionCount"} ]
+    }
+
+	]
+}

@@ -1,0 +1,1 @@
+{"outputWriters": [    {      "@class": "org.jmxtrans.embedded.output.StatsDWriter",      "settings": {        "host": "graphite.etc.hosts",        "port": "8125",		"namePrefix": ""      }    }  ]}

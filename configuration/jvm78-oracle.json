@@ -1,0 +1,37 @@
+{
+"queries" : [ 
+    {
+	  "type" : "gauge",
+      "objectName" : "java.lang:type=Memory",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.Memory",
+      "attributes": [
+			{ "type" : "gauge",	"name": "HeapMemoryUsage","keys": ["max", "used"]	},
+			{ "type" : "gauge",	"name": "NonHeapMemoryUsage","keys": ["committed", "used"]	}
+	  ] 
+    },
+    {
+	  "type" : "gauge",
+      "objectName" : "java.lang:type=GarbageCollector,name=ConcurrentMarkSweep",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.ConcurrentMarkSweep",
+      "attributes" : [ { "type" : "gauge", "name":"CollectionCount"} , { "type" : "gauge", "name":"CollectionTime"}]
+    },
+    {
+	  "type" : "gauge",
+      "objectName" : "java.lang:type=GarbageCollector,name=ParNew",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.ParNew",
+      "attributes" : [ { "type" : "gauge", "name":"CollectionCount"}, { "type" : "gauge", "name":"CollectionTime"} ]
+    },
+    {
+	  "type" : "gauge",
+      "objectName" : "java.lang:type=Threading",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.Thread",
+      "attributes" : [ { "type" : "gauge", "name":"ThreadCount"} ]
+    },
+    {
+	  "type" : "gauge",
+      "objectName" : "java.lang:type=OperatingSystem",
+      "resultAlias": "${jmxtrans.graphite.path}.${jmxtrans.graphite.name}.Java.OS",
+      "attributes" : [ { "type" : "gauge", "name":"ProcessCpuTime"}, { "type" : "gauge", "name":"AvailableProcessors"}, { "type" : "gauge", "name":"SystemLoadAverage"}, { "type" : "gauge", "name":"ProcessCpuLoad"} ]
+    }	
+	]
+}
